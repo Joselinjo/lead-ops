@@ -1,0 +1,32 @@
+{
+  "name": "lead-ops",
+  "version": "1.0.0",
+  "description": "Radar de leads B2B con Claude: encuentra empresas con una señal de compra, las investiga a fondo y deja cada lead con su ficha y su correo en frío listos para tu CRM.",
+  "scripts": {
+    "radar": "node radar.mjs",
+    "prueba": "node radar.mjs --solo-gratis",
+    "vigilancia": "node vigilancia.mjs",
+    "cifrar": "node cifrado.mjs cifrar",
+    "descifrar": "node cifrado.mjs descifrar"
+  },
+  "keywords": [
+    "leads",
+    "sales",
+    "prospecting",
+    "claude",
+    "anthropic",
+    "crm",
+    "outreach",
+    "b2b"
+  ],
+  "author": "Jose López (Joselinjo)",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
+    "fast-xml-parser": "^4.5.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "_léeme": "Configuración de EJEMPLO con una empresa inventada. Cópiala a config/config.json (no se sube a git) y cámbialo todo por lo tuyo: oferta, perfiles, reglas, estilo y sectores.",
+  "pais": "España",
+  "ubicacion": { "pais": "ES", "zonaHoraria": "Europe/Madrid" },
+  "tiendaApps": { "pais": "es", "idioma": "es_es" },
+
+  "modelo": "claude-opus-5-5",
+  "esfuerzo": "high",
+  "presupuestoDiario": 10,
+  "candidatosAEvaluar": 30,
+  "candidatosPorBusqueda": 10,
+  "busquedasDescubrimiento": 10,
+  "busquedasPorLead": 6,
+  "investigacionesEnParalelo": 3,
+  "correosPorDia": 15,
+  "llamadasPorDia": 5,
+  "calorMinimo": 4,
+
+  "empresa": {
+    "nombre": "Estudio Faro",
+    "ciudad": "Valencia",
+    "comercial": "Laura Gómez",
+    "firma": "Laura",
+    "queHacemos": "Somos el equipo de producto de empresas que tienen una app de cara al cliente pero no un equipo técnico propio: la arreglamos, la mejoramos y la hacemos crecer con una cuota mensual.",
+    "pruebas": "Ejemplo: llevamos las apps de una cadena de clínicas y de una red de academias (sustituye esto por tus clientes reales y públicos).",
+    "metodo": "En el primer contacto no vendemos: ofrecemos gratis un análisis de su app con datos públicos (opiniones, capturas, fallos que se repiten) explicado en un vídeo corto. La reunión llega cuando lo han visto.",
+    "gancho": "un análisis gratis de su app en vídeo"
+  },
+
+  "capacidadPago": {
+    "minimo": "3.000 €/mes",
+    "criterio": "facturación de unos 500.000 €/año o más, o una ronda de 300.000 € o más",
+    "descarteSi": "factura claramente menos de ~500.000 €/año y no tiene una ronda de 300.000 € o más"
+  },
+
+  "perfiles": {
+    "Empresa con app regular": "Empresa no tecnológica con app de cara al cliente en uso que tiene problemas visibles (nota baja o en caída, quejas recientes de fallos, pagos o acceso) y negocio vivo detrás.",
+    "Empresa sin app todavía": "Empresa que quiere lanzar una app o plataforma y tiene dinero para pagarla.",
+    "Busca equipo técnico": "Empresa con dinero que busca ahora un responsable técnico o de producto digital y no tiene a nadie técnico."
+  },
+
+  "reglasDescarte": [
+    "Agencias o consultoras de desarrollo de software (son competencia).",
+    "Empresas que ya tienen director técnico o un equipo técnico grande.",
+    "Multinacionales, empresas cotizadas o con más de 500 empleados.",
+    "Apps o proyectos abandonados: sin actualizar desde hace más de 18 meses y sin actividad de la empresa, web caída o empresa cerrada.",
+    "Proyectos personales o que solo buscan socio a cambio de participación.",
+    "Empresas de fuera del país o cuyo decisor no está en el país.",
+    "Cualquier empresa de la lista de exclusión (data/excluir.txt)."
+  ],
+
+  "notasEvaluacion": [
+    "Una empresa que puede pagar y busca CONTRATAR un responsable técnico (no un socio a cambio de participación) no es descarte: es justo lo que ofrecemos."
+  ],
+
+  "estilo": [
+    "Lenguaje natural, frases que se puedan decir tal cual por teléfono. Sin jerga (nada de roadmap, MVP, SaaS, funnel).",
+    "Apertura: 'Hola, [nombre]. Soy Laura, de Estudio Faro. Somos el equipo de producto de [tipo de empresa como la suya]. Te llamo porque he visto [señal concreta] y creo que te puedo ayudar con algo. ¿Tienes un minuto?'",
+    "Nunca mencionar precios ni criticar su app o a su proveedor: valorar lo que han hecho y mencionar una mejora concreta.",
+    "Nunca inventar datos: si algo no se encuentra, dejarlo vacío."
+  ],
+
+  "correo": {
+    "ofertaConGancho": "Si te parece, te preparo gratis un vídeo corto con lo que más piden tus clientes en las opiniones y qué mejoraría primero. Solo tienes que contestarme a este correo.",
+    "ofertaSinGancho": "Si te parece interesante, lo vemos en unos minutos esta semana.",
+    "reglas": [
+      "Corto (90-140 palabras), párrafos separados por una línea en blanco.",
+      "Sin precios, sin adjuntos y sin prometer una llamada en un día concreto.",
+      "Sin efusividad y sin criticar su app ni a su proveedor: valora lo que han hecho y menciona UNA mejora concreta.",
+      "Asunto que dé ganas de abrirlo: «Una idea para [app o empresa]»."
+    ]
+  },
+
+  "criba": {
+    "prioriza": [
+      "Empresas medianas NO tecnológicas (cines, gimnasios, clínicas, tiendas, transporte, ocio…) con una app de cara al cliente mal valorada o con quejas recientes, que suele hacerles un proveedor externo.",
+      "Cadenas y empresas medianas con dinero en movimiento: expansión, entrada de un fondo, plan de digitalización, app nueva.",
+      "Empresas con dinero que buscan AHORA un responsable técnico o de producto digital."
+    ],
+    "evita": [
+      "Startups que acaban de levantar una ronda: casi siempre ya tienen director técnico y equipo propio.",
+      "Licitaciones públicas ya publicadas: se adjudican por concurso, contactar no sirve.",
+      "Ofertas de cofundador o socio técnico a cambio de participación.",
+      "Noticias que no hablan de una empresa concreta (ayudas a varias empresas, rankings).",
+      "Empresas tecnológicas o cuya app ES el producto (suelen tener equipo propio).",
+      "Grandes grupos, multinacionales, apuestas, juegos."
+    ]
+  },
+
+  "descubrimiento": {
+    "filtro": "Solo empresas vivas, con facturación de unos 500.000 €/año o más y menos de 500 empleados; no cotizadas ni filiales de grandes grupos, no empresas de software, agencias ni consultoras, y sin equipo técnico propio (ideal: la app la hace un proveedor externo; mira el desarrollador en la ficha de la tienda). La señal tiene que ser concreta y comprobable en la fuente.",
+    "sectores": [
+      { "clave": "ocio", "encargo": "empresas de OCIO, RESTAURACIÓN Y TURISMO (cadenas de restaurantes con app de pedidos o fidelización, cines, parques de ocio, hoteles medianos) con la app con nota ≤ 3,5 o quejas que se repiten en los últimos 6 meses, o con aperturas y expansión con dinero." },
+      { "clave": "retail", "encargo": "empresas de RETAIL Y MARCAS DE CONSUMO (cadenas regionales de tiendas, tiendas online medianas, marcas con aparatos conectados a una app) con la app con nota ≤ 3,5 o quejas recientes repetidas, o en expansión." },
+      { "clave": "salud", "encargo": "empresas privadas de SALUD Y BIENESTAR (grupos de clínicas, laboratorios, aseguradoras de salud regionales, ópticas en cadena) cuya app de pacientes tiene nota ≤ 3,5 o quejas repetidas recientes, o que abren centros con un fondo." },
+      { "clave": "servicios", "encargo": "empresas de MOVILIDAD, ENERGÍA Y SERVICIOS (autobuses, gasolineras, aparcamientos, comercializadoras de energía medianas, corredurías, inmobiliarias en red) con la app de clientes con nota ≤ 3,5 o quejas repetidas recientes." },
+      { "clave": "digital", "encargo": "empresas NO tecnológicas que están MONTANDO EQUIPO DIGITAL AHORA: ofertas de empleo de los últimos 60 días para responsable de producto digital, de app o de e-commerce, o anuncios recientes de app nueva o plan de digitalización con dinero." }
+    ]
+  },
+
+  "fuentesRondas": [
+    "https://elreferente.es/feed/",
+    "https://ecosistemastartup.com/feed/"
+  ],
+  "busquedasApps": [
+    "reservas", "citas", "clínica", "dental", "gimnasio", "restaurante", "pedidos", "cine", "entradas", "ocio",
+    "hotel", "tienda", "fidelización", "supermercado", "farmacia", "óptica", "autobús", "parking", "taxi", "gasolinera",
+    "energía", "seguros", "mutua", "hospital", "academia", "autoescuela", "inmobiliaria", "electrodomésticos", "juguetes", "moda"
+  ],
+  "filtroApps": {
+    "notaMaxima": 3.8,
+    "valoracionesMinimas": 10,
+    "valoracionesMaximas": 5000,
+    "mesesMaxSinActualizar": 18
+  }
+}

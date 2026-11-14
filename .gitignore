@@ -1,0 +1,16 @@
+# Dependencias y sistema
+node_modules/
+.DS_Store
+.env
+*.log
+
+# --- TODO LO PRIVADO SE QUEDA EN LOCAL ---
+# Tu configuración real (oferta, precios, clientes): copia config/ejemplo.json a config/config.json
+config/config.json
+# Resultados del radar: leads reales con nombres, emails y teléfonos
+output/
+# Estado y listas: lo ya investigado, tu CRM, tu lista de exclusión
+data/*
+!data/*.ejemplo.*
+# Rutinas, documentos y notas propias de tu empresa (URLs internas, IDs de Slack, dossiers…)
+privado/

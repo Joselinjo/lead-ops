@@ -1,0 +1,3 @@
+# Días en que no se puede llamar (vacaciones, fuera de la oficina…). Uno por línea: AAAA-MM-DD · motivo.
+# Copia este archivo a data/dias-sin-llamadas.txt. Las rutinas no programan llamadas esos días.
+2026-12-24 · Nochebuena

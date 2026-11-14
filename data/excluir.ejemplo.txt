@@ -1,0 +1,5 @@
+# Empresas que el radar NUNCA debe proponer (una por línea; vale nombre o dominio).
+# Copia este archivo a data/excluir.txt (no se sube a git) y añade tus clientes, tu CRM y lo ya trabajado.
+# Ejemplo:
+Empresa Que Ya Es Cliente
+empresaqueyaescliente.com
