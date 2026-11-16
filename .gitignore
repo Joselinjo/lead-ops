@@ -1,6 +1,7 @@
 # Dependencias y sistema
 node_modules/
 .DS_Store
+._*
 .env
 *.log
 

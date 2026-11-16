@@ -40,7 +40,8 @@ function rutasDelPaquete() {
 }
 
 function tar(args, input) {
-  const r = spawnSync("tar", args, { cwd: ROOT, input, maxBuffer: 1024 * 1024 * 1024 });
+  // COPYFILE_DISABLE evita que el tar de macOS meta archivos «._*» de metadatos en el paquete.
+  const r = spawnSync("tar", args, { cwd: ROOT, input, maxBuffer: 1024 * 1024 * 1024, env: { ...process.env, COPYFILE_DISABLE: "1" } });
   if (r.status !== 0) throw new Error(`tar falló: ${r.stderr?.toString()}`);
   return r.stdout;
 }
@@ -55,7 +56,7 @@ if (accion === "clave") {
 } else if (accion === "cifrar") {
   const k = clave();
   const rutas = rutasDelPaquete();
-  const paquete = tar(["-czf", "-", "--exclude", "privado/archivo", "--exclude", ".DS_Store", ...rutas]);
+  const paquete = tar(["-czf", "-", "--exclude", "privado/archivo", "--exclude", ".DS_Store", "--exclude", "._*", ...rutas]);
   const iv = randomBytes(12);
   const c = createCipheriv("aes-256-gcm", k, iv);
   const cifrado = Buffer.concat([c.update(paquete), c.final()]);
