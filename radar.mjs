@@ -110,28 +110,55 @@ async function worker() {
 }
 await Promise.all(Array.from({ length: config.investigacionesEnParalelo ?? 5 }, worker));
 
-// 5. Los leads del día. Todos empiezan por CORREO: cada lead que encaja y puede pagar sale con su
-// correo escrito, hasta correosPorDia. Los de calor 4-5 llevan además merece_llamada: la rutina del CRM
-// les consigue el móvil del decisor y les pone «Llamar» unos días después del envío (llamadasPorDia como tope).
+// 5. Los leads del día. Calidad frente a cantidad: no hay cupo. Solo sale con correo quien tiene una
+// señal activa verificada y calor >= calidad.calorMinimoCorreo; los de calor 4-5 con via=llamar llevan
+// además merece_llamada. Las «cuentas top» (calor 5 con una de calidad.senalesTop) no se envían solas:
+// la rutina local les prepara un plan de cuenta (vídeo, LinkedIn, correo y llamada) para que el comercial
+// las trabaje a mano. Lo que encaja y puede pagar pero no tiene señal va a data/vigilar.json.
+const calidad = config.calidad ?? {};
+const minCorreo = calidad.calorMinimoCorreo ?? 3;
+const senalesTop = new Set(calidad.senalesTop ?? []);
+const conSenal = (l) => !config.calidad || (l.tipo_senal && l.tipo_senal !== "ninguna");
+const pasa = (l) => l.puede_pagar !== false && l.calor >= minCorreo && conSenal(l) && l.correo;
 const leads = evaluados
-  .filter((l) => l.puede_pagar !== false && l.calor >= 3 && l.correo)
+  .filter(pasa)
   .sort((a, b) => b.calor - a.calor)
-  .slice(0, config.correosPorDia ?? 30)
-  .map((l) => ({ ...l, accion: "Enviar email", merece_llamada: l.calor >= (config.calorMinimo ?? 4) && l.via === "llamar" }));
+  .slice(0, config.correosPorDia ?? Infinity)
+  .map((l) => {
+    const merece_llamada = l.calor >= (config.calorMinimo ?? 4) && l.via === "llamar";
+    const cuenta_top = merece_llamada && l.calor >= 5 && senalesTop.has(l.tipo_senal);
+    return { ...l, accion: cuenta_top ? "Plan de cuenta" : "Enviar email", merece_llamada, cuenta_top };
+  });
 const paraLlamar = leads.filter((l) => l.merece_llamada);
-const paraCorreo = leads;
+const paraCorreo = leads.filter((l) => !l.cuenta_top);
+const cuentasTop = leads.filter((l) => l.cuenta_top);
+
+// Vigilancia: los que encajan y pueden pagar pero aún no tienen señal (se repasan cada semana).
+const ficheroVigilar = join(DATA, "vigilar.json");
+const vigilar = existsSync(ficheroVigilar) ? JSON.parse(readFileSync(ficheroVigilar, "utf8")) : [];
+const hoy = new Date().toISOString().slice(0, 10);
+const hace90 = new Date(Date.now() - 90 * 864e5).toISOString().slice(0, 10);
+const nuevosVigilar = evaluados.filter((l) => !pasa(l) && l.puede_pagar !== false && l.calor >= 3);
+for (const l of nuevosVigilar) {
+  const k = norm(l.dominio || l.empresa);
+  const i = vigilar.findIndex((v) => norm(v.dominio || v.empresa) === k);
+  const entrada = { fecha: hoy, empresa: l.empresa, dominio: l.dominio, perfil: l.perfil, calor: l.calor, tipo_senal: l.tipo_senal || "ninguna", senal: l.senal, por_que: l.por_que_ahora, decisor: [l.decisor_nombre, l.decisor_cargo].filter(Boolean).join(", "), facturacion: l.facturacion_estimada };
+  if (i >= 0) vigilar[i] = entrada; else vigilar.push(entrada);
+}
+writeFileSync(ficheroVigilar, JSON.stringify(vigilar.filter((v) => v.fecha >= hace90), null, 2));
 const dir = outputDir();
 writeFileSync(join(dir, "leads.json"), JSON.stringify(leads, null, 2));
 
 // Fichas legibles (y el texto exacto que va como nota en el CRM).
 const nota = (l) =>
-  `Ficha del radar (${new Date().toISOString().slice(0, 10)}) · Calor ${l.calor}/5 · ${l.perfil}. ` +
+  `Ficha del radar (${new Date().toISOString().slice(0, 10)}) · Calor ${l.calor}/5 · ${l.perfil}${l.tipo_senal ? ` · Señal: ${l.tipo_senal}` : ""}. ` +
+  (l.cuenta_top ? "CUENTA TOP: se trabaja a mano con plan de cuenta (vídeo, LinkedIn, correo y llamada); su correo no se envía solo. " : "") +
   (l.facturacion_estimada ? `Tamaño: ${l.facturacion_estimada}. ` : "") +
   `Por qué ahora: ${l.por_que_ahora} Señal: ${l.senal}${l.senal_url ? ` (${l.senal_url})` : ""}. ` +
   `Apertura: «${l.apertura}» Gancho: ${l.gancho} Pregunta clave: «${l.pregunta_clave}» ` +
   `Si dice «${l.objecion_probable}»: «${l.respuesta_objecion}»` +
   (l.telefono_fuente ? ` Teléfono: ${l.telefono_fuente}.` : "") +
-  ` ${l.merece_llamada ? "MERECE LLAMADA unos días después del envío." : "Solo correo: si no contesta, no se llama."} Asunto: «${l.asunto_correo}». Correo: ${l.correo}`;
+  ` ${l.cuenta_top ? "" : l.merece_llamada ? "MERECE LLAMADA unos días después del envío." : "Solo correo: si no contesta, no se llama."} Asunto: «${l.asunto_correo}». Correo: ${l.correo}`;
 leads.forEach((l) => (l.nota_crm = nota(l)));
 writeFileSync(join(dir, "leads.json"), JSON.stringify(leads, null, 2));
 
@@ -151,10 +178,10 @@ writeFileSync(join(dir, "leads-crm.csv"), [cab, ...filas].map((f) => f.map(csvEs
 writeFileSync(
   join(dir, "fichas.md"),
   `# Leads del ${new Date().toLocaleDateString("es-ES")}\n\n` +
-    leads.map((l, i) => `## ${i + 1}. ${l.merece_llamada ? "📞 " : "✉️ "}${l.empresa} · calor ${l.calor}/5\n**${l.decisor_nombre || "Decisor por confirmar"}** (${l.decisor_cargo || "—"}) · ${l.telefono_publico || "sin teléfono público"} · ${l.dominio}\n\n${l.nota_crm}\n${l.candidato_revelar_movil ? `\n**Merece conseguir su móvil:** ${l.justificacion_movil || ""}\n` : ""}`).join("\n")
+    leads.map((l, i) => `## ${i + 1}. ${l.cuenta_top ? "⭐ " : l.merece_llamada ? "📞 " : "✉️ "}${l.empresa} · calor ${l.calor}/5\n**${l.decisor_nombre || "Decisor por confirmar"}** (${l.decisor_cargo || "—"}) · ${l.telefono_publico || "sin teléfono público"} · ${l.dominio}\n\n${l.nota_crm}\n${l.candidato_revelar_movil ? `\n**Merece conseguir su móvil:** ${l.justificacion_movil || ""}\n` : ""}`).join("\n")
 );
 
 saveSeen(seen);
 const coste = estimatedCost();
-writeFileSync(join(dir, "resumen.json"), JSON.stringify({ leads: leads.length, correos: paraCorreo.length, merecenLlamada: paraLlamar.length, investigados, evaluados: evaluados.length, usage, costeEstimadoUSD: Number(coste.toFixed(2)) }, null, 2));
-log(`Listo: ${leads.length} leads con correo (${paraLlamar.length} merecen además llamada) en ${dir}. Coste estimado: ${coste.toFixed(2)} $ (${usage.searches} búsquedas, ${usage.calls} llamadas a Claude).`);
+writeFileSync(join(dir, "resumen.json"), JSON.stringify({ leads: leads.length, correos: paraCorreo.length, merecenLlamada: paraLlamar.length, cuentasTop: cuentasTop.length, aVigilar: nuevosVigilar.length, investigados, evaluados: evaluados.length, usage, costeEstimadoUSD: Number(coste.toFixed(2)) }, null, 2));
+log(`Listo: ${leads.length} leads con señal activa (${cuentasTop.length} cuentas top, ${paraLlamar.length} merecen llamada) y ${nuevosVigilar.length} a vigilar, en ${dir}. Coste estimado: ${coste.toFixed(2)} $ (${usage.searches} búsquedas, ${usage.calls} llamadas a Claude).`);
