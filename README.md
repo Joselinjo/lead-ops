@@ -47,6 +47,7 @@ cp data/excluir.ejemplo.txt data/excluir.txt
 npm run prueba                               # solo fuentes gratuitas: no gasta nada
 node radar.mjs --max 3                       # investiga 3 candidatos (prueba barata)
 npm run radar                                # ejecución normal
+npm run resenas -- "Empresa" empresa.com     # reseñas recientes en App Store y Google Play (gratis)
 ```
 
 ## Configuración (`config/config.json`)

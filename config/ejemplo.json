@@ -112,5 +112,13 @@
     "valoracionesMinimas": 10,
     "valoracionesMaximas": 5000,
     "mesesMaxSinActualizar": 18
+  },
+  "resenas": {
+    "explicacion": "Muchas valoraciones = negocio consolidado. Un pico de quejas reciente en una app consolidada es un dolor reciente con pruebas.",
+    "dias": 90,
+    "minResenas": 8,
+    "umbralNegativas": 0.4,
+    "valoracionesMinimas": 500,
+    "revisarBajones": 40
   }
 }

@@ -142,7 +142,7 @@ const nuevosVigilar = evaluados.filter((l) => !pasa(l) && l.puede_pagar !== fals
 for (const l of nuevosVigilar) {
   const k = norm(l.dominio || l.empresa);
   const i = vigilar.findIndex((v) => norm(v.dominio || v.empresa) === k);
-  const entrada = { fecha: hoy, empresa: l.empresa, dominio: l.dominio, perfil: l.perfil, calor: l.calor, tipo_senal: l.tipo_senal || "ninguna", senal: l.senal, por_que: l.por_que_ahora, decisor: [l.decisor_nombre, l.decisor_cargo].filter(Boolean).join(", "), facturacion: l.facturacion_estimada };
+  const entrada = { fecha: hoy, empresa: l.empresa, dominio: l.dominio, perfil: l.perfil, calor: l.calor, tipo_senal: l.tipo_senal || "ninguna", senal: l.senal, por_que: l.por_que_ahora, decisor: [l.decisor_nombre, l.decisor_cargo].filter(Boolean).join(", "), facturacion: l.facturacion_estimada, resenas: l.tiendas?.resumen ?? "" };
   if (i >= 0) vigilar[i] = entrada; else vigilar.push(entrada);
 }
 writeFileSync(ficheroVigilar, JSON.stringify(vigilar.filter((v) => v.fecha >= hace90), null, 2));
@@ -154,6 +154,7 @@ const nota = (l) =>
   `Ficha del radar (${new Date().toISOString().slice(0, 10)}) · Calor ${l.calor}/5 · ${l.perfil}${l.tipo_senal ? ` · Señal: ${l.tipo_senal}` : ""}. ` +
   (l.cuenta_top ? "CUENTA TOP: se trabaja a mano con plan de cuenta (vídeo, LinkedIn, correo y llamada); su correo no se envía solo. " : "") +
   (l.facturacion_estimada ? `Tamaño: ${l.facturacion_estimada}. ` : "") +
+  (l.tiendas?.resumen ? `${l.tiendas.resumen} ` : "") +
   `Por qué ahora: ${l.por_que_ahora} Señal: ${l.senal}${l.senal_url ? ` (${l.senal_url})` : ""}. ` +
   `Apertura: «${l.apertura}» Gancho: ${l.gancho} Pregunta clave: «${l.pregunta_clave}» ` +
   `Si dice «${l.objecion_probable}»: «${l.respuesta_objecion}»` +
