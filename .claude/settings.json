@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run cifrar)",
+      "Bash(npm run descifrar)",
+      "Bash(git add privado.enc)",
+      "Bash(git commit:*)",
+      "Bash(git push origin HEAD:main)"
+    ]
+  }
+}
